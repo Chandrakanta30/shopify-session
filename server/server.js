@@ -8,6 +8,7 @@ import next from "next";
 import Router from "koa-router";
 import axios from "axios";
 import session from "koa-session";
+const FormData = require("form-data");
 dotenv.config();
 const port = parseInt(process.env.PORT, 10) || 8081;
 const dev = process.env.NODE_ENV !== "production";
@@ -313,6 +314,8 @@ router.get('/order_details', async (ctx) => {
           message: "Order id not found"
       };
   }
+  console.log(`https://`+shop_name+`/admin/api/2020-10/orders/` + ctx.request.query.order_id + `.json`);
+  console.log(config);
   let scriptData = await axios.get(`https://`+shop_name+`/admin/api/2020-10/orders/` + ctx.request.query.order_id + `.json`, config);
   var viewData = {
       line_items: [],
