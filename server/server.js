@@ -31,6 +31,7 @@ Shopify.Context.initialize({
 // Storing the currently active shops in memory will force them to re-login when your server restarts. You should
 // persist this object in your app.
 const ACTIVE_SHOPIFY_SHOPS = {};
+global.shop_name='';
 global.nextUrl="";
 global.prev_url="";
 app.prepare().then(async () => {
@@ -48,6 +49,7 @@ app.prepare().then(async () => {
         // Access token and shop available in ctx.state.shopify
         const { shop, accessToken, scope } = ctx.state.shopify;
         ACTIVE_SHOPIFY_SHOPS[shop] = accessToken;
+        shop_name=shop;
 
 
         const response = await Shopify.Webhooks.Registry.register({
@@ -245,6 +247,8 @@ router.get('/orders_list', async (ctx) => {
           "X-Shopify-Access-Token": ACTIVE_SHOPIFY_SHOPS['imprintnext123.myshopify.com'],
       }
   }
+  console.log(ACTIVE_SHOPIFY_SHOPS['imprintnext123.myshopify.com']);
+  console.log(shop_name);
   console.log("ctx" + JSON.stringify(ctx.session));
   let enable_forward = false;
   let enable_backward = false;
