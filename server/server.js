@@ -95,7 +95,7 @@ app.prepare().then(async () => {
 
 // ------------------------------------------Custom api start---------------------------------------------------------------------------//
 
-router.get('/get_next_orders', verifyRequest(), async (ctx) => {
+router.get('/get_next_orders', async (ctx) => {
   console.log("session");
   console.log(ctx.session.accessToken);
   const config = {
@@ -168,7 +168,7 @@ router.get("/validate_url", async (ctx) => {
   console.log(ctx.state);
 
   let scriptData = await axios.get(
-    "https://pod.crystalwaterdesigns.com/designer/api/v1/store/validate?url=https://imprintnext123.myshopify.com",
+    "https://pod.crystalwaterdesigns.com/designer/api/v1/store/validate?url=https://"+shop_name,
     config
   );
   ctx.body = {
@@ -177,7 +177,7 @@ router.get("/validate_url", async (ctx) => {
     data: scriptData.data.count,
   };
 });
-router.get('/get_prev_orders', verifyRequest(), async (ctx) => {
+router.get('/get_prev_orders',  async (ctx) => {
   const config = {
       headers: {
           'Content-Type': 'application/json',
@@ -244,15 +244,15 @@ router.get('/orders_list', async (ctx) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-          "X-Shopify-Access-Token": ACTIVE_SHOPIFY_SHOPS['imprintnext123.myshopify.com'],
+          "X-Shopify-Access-Token": ACTIVE_SHOPIFY_SHOPS[shop_name],
       }
   }
-  console.log(ACTIVE_SHOPIFY_SHOPS['imprintnext123.myshopify.com']);
+  console.log(ACTIVE_SHOPIFY_SHOPS[shop_name]);
   console.log(shop_name);
   console.log("ctx" + JSON.stringify(ctx.session));
   let enable_forward = false;
   let enable_backward = false;
-  let scriptData = await axios.get(`https://imprintnext123.myshopify.com/admin/api/2020-10/orders.json?status=any&limit=5`, config);
+  let scriptData = await axios.get(`https://`+shop_name+`/admin/api/2020-10/orders.json?status=any&limit=5`, config);
   let imprintnextOrders = [];
   var links = scriptData.headers.link.split(',');
   links.forEach(element => {
@@ -297,13 +297,13 @@ router.get('/orders_list', async (ctx) => {
       backward: enable_backward
   };
 });
-router.get('/order_details', verifyRequest(), async (ctx) => {
+router.get('/order_details', async (ctx) => {
   const config = {
       headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-          "X-Shopify-Access-Token": ACTIVE_SHOPIFY_SHOPS['imprintnext123.myshopify.com'],
+          "X-Shopify-Access-Token": ACTIVE_SHOPIFY_SHOPS[shop_name],
       }
   }
   if (ctx.request.query.order_id == '') {
@@ -313,7 +313,7 @@ router.get('/order_details', verifyRequest(), async (ctx) => {
           message: "Order id not found"
       };
   }
-  let scriptData = await axios.get(`https://imprintnext123.myshopify.com/admin/api/2020-10/orders/` + ctx.request.query.order_id + `.json`, config);
+  let scriptData = await axios.get(`https://`+shop_name+`/admin/api/2020-10/orders/` + ctx.request.query.order_id + `.json`, config);
   var viewData = {
       line_items: [],
       billing_address: '',
@@ -325,7 +325,7 @@ router.get('/order_details', verifyRequest(), async (ctx) => {
   var imprintnextproducts = [];
   for (let index = 0; index < scriptData.data.order.line_items.length; index++) {
       if (scriptData.data.order.line_items[index].sku.includes("IMPNXT")) {
-          const product_data = await axios.get(`https://imprintnext123.myshopify.com/admin/api/2020-10/products/` + scriptData.data.order.line_items[index].product_id + `/images.json`, config);
+          const product_data = await axios.get(`https://`+shop_name+`/admin/api/2020-10/products/` + scriptData.data.order.line_items[index].product_id + `/images.json`, config);
           let product = {
               product_title: scriptData.data.order.line_items[index].title,
               price: scriptData.data.order.line_items[index].price,
